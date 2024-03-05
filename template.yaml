@@ -16,12 +16,12 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: Beeblogit comments AGW
-      StageName: comments
+      StageName: Prod
 
   StoreComment:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Name: Get all comments
+      Description: Get all comments
       CodeUri: cmd/comment/store/
       Handler: storeComment
       Runtime: go1.x
