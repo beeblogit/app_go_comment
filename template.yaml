@@ -12,9 +12,16 @@ Globals:
     MemorySize: 128
 
 Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Beeblogit comments AGW
+      StageName: comments
+
   StoreComment:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      Name: Get all comments
       CodeUri: cmd/comment/store/
       Handler: storeComment
       Runtime: go1.x
@@ -22,7 +29,8 @@ Resources:
         CatchAll:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /comment
+            RestApiId: !Ref ApiGateway
+            Path: /
             Method: GET
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
@@ -32,12 +40,6 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldAPI:
-    Description: "API Gateway endpoint URL for Prod environment for First Function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  StoreComment:
     Description: "First Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !GetAtt StoreComment.Arn
