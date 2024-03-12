@@ -10,31 +10,35 @@ Globals:
   Function:
     Timeout: 10
     MemorySize: 128
+    Environment:
+      Variables:
+        DATABASE_USER: ""
+        DATABASE_PASSWORD: ""
+        DATABASE_HOST: ""
+        DATABASE_PORT: ""
+        DATABASE_NAME: ""
 
 Resources:
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: Beeblogit comments AGW
+      Name: Beeblogit interaction AGW
       StageName: Prod
 
   StoreComment:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       Description: Get all comments
-      CodeUri: cmd/comment/store/
-      Handler: storeComment
+      CodeUri: cmd/comment/
+      Handler: store
       Runtime: go1.x
       Events:
         CatchAll:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /
+            Path: /comments
             Method: GET
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

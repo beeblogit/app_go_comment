@@ -1,28 +1,46 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/aws/aws-lambda-go/events"
+	"os"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/beeblogit/app_go_interaction/pkg/bootstrap"
+	"github.com/beeblogit/app_go_interaction/pkg/handler"
+	"github.com/beeblogit/app_go_interaction/internal/comment"
+	"gorm.io/gorm"
+	//"context"
+	"github.com/go-kit/kit/transport/awslambda"
 )
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var greeting string
-	sourceIP := request.RequestContext.Identity.SourceIP
+var db *gorm.DB
+var h *awslambda.Handler
 
-	if sourceIP == "" {
-		greeting = "Hello, world!\n"
-	} else {
-		greeting = fmt.Sprintf("Hello :D, %s!\n", sourceIP)
+func init() {
+
+	var err error
+
+	//_ = godotenv.Load()
+	l := bootstrap.InitLogger()
+
+	db, err = bootstrap.DBConnection()
+	if err != nil {
+		l.Fatal(err)
 	}
 
-	return events.APIGatewayProxyResponse{
-		Body:       greeting,
-		StatusCode: 200,
-	}, nil
+	pagLimDef := os.Getenv("PAGINATOR_LIMIT_DEFAULT")
+	if pagLimDef == "" {
+		l.Fatal("paginator limit default is required")
+	}
+
+	//ctx := context.Background()
+	repo := comment.NewRepo(db, l)
+	service := comment.NewService(l, repo)
+
+
+	endpoint := comment.MakeEndpoints(service, comment.Config{LimPageDef: pagLimDef})
+	h = handler.NewLambdaCommentStore(endpoint)
+
 }
 
 func main() {
-	lambda.Start(handler)
+	lambda.StartHandler(h)
 }

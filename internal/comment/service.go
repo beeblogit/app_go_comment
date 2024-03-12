@@ -3,9 +3,9 @@ package comment
 import (
 	"context"
 	"log"
-	"time"
+	//"time"
 
-	"github.com/beeblogit/lib_go_domain/domain"
+	blogDomain "github.com/beeblogit/lib_go_domain/domain/blog"
 )
 
 type (
@@ -16,9 +16,9 @@ type (
 	}
 
 	Service interface {
-		Create(ctx context.Context, userID, postID, name, comment string) (*domain.Comment, error)
-		Get(ctx context.Context, id string) (*domain.Comment, error)
-		GetAll(ctx context.Context, filters Filters, offset, limit int) ([]domain.Comment, error)
+		Create(ctx context.Context, userID, postID, name, comment string) (*blogDomain.Comment, error)
+		Get(ctx context.Context, id string) (*blogDomain.Comment, error)
+		GetAll(ctx context.Context, filters Filters, offset, limit int) ([]blogDomain.Comment, error)
 		//Delete(ctx context.Context, id string) error
 		//Update(ctx context.Context, id string, name, startDate, endDate *string) error
 		Count(ctx context.Context, filters Filters) (int, error)
@@ -37,29 +37,29 @@ func NewService(l *log.Logger, repo Repository) Service {
 	}
 }
 
-func (s service) Create(ctx context.Context, userID, postID, name, comment string) (*domain.Comment, error) {
+func (s service) Create(ctx context.Context, userID, postID, name, comment string) (*blogDomain.Comment, error) {
 
 
-	comment := &domain.Comment{
+	comObj := &blogDomain.Comment{
 		UserID: userID,
 		PostID: postID,
 		Name:      name,
 		Comment: comment,
 	}
 
-	if err := s.repo.Create(ctx, comment); err != nil {
+	if err := s.repo.Create(ctx, comObj); err != nil {
 		return nil, err
 	}
 
-	return comment, nil
+	return comObj, nil
 }
 
 
-func (s service) Get(ctx context.Context, id string) (*domain.Comment, error) {
+func (s service) Get(ctx context.Context, id string) (*blogDomain.Comment, error) {
 	return nil, nil
 }
 
-func (s service) GetAll(ctx context.Context, filters Filters, offset, limit int) ([]domain.Comment, error) {
+func (s service) GetAll(ctx context.Context, filters Filters, offset, limit int) ([]blogDomain.Comment, error) {
 	return nil, nil
 }
 

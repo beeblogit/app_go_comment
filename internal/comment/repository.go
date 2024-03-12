@@ -2,20 +2,20 @@ package comment
 
 import (
 	"context"
-	"fmt"
+	//"fmt"
 	"log"
-	"strings"
-	"time"
+	//"strings"
+	//"time"
 
-	"github.com/beeblogit/lib_go_domain/domain"
+	blogDomain "github.com/beeblogit/lib_go_domain/domain/blog"
 	"gorm.io/gorm"
 )
 
 type (
 	Repository interface {
-		Create(ctx context.Context, comment *domain.Comment) error
-		GetAll(ctx context.Context, filters Filters, offset, limit int) ([]domain.Comment, error)
-		Get(ctx context.Context, id string) (*domain.Comment, error)
+		Create(ctx context.Context, comment *blogDomain.Comment) error
+		GetAll(ctx context.Context, filters Filters, offset, limit int) ([]blogDomain.Comment, error)
+		Get(ctx context.Context, id string) (*blogDomain.Comment, error)
 		Update(ctx context.Context, ID, userID string, name *string, comment *string) error
 		Count(ctx context.Context, filters Filters) (int, error)
 	}
@@ -26,9 +26,16 @@ type (
 	}
 )
 
-func (r *repo) Create(ctx context.Context, comment *domain.Comment) error {
+func NewRepo(db *gorm.DB, l *log.Logger) Repository {
+	return &repo{
+		db:  db,
+		log: l,
+	}
+}
 
-	if err := r.db.WithContext(ctx).Create(course).Error; err != nil {
+func (r *repo) Create(ctx context.Context, comment *blogDomain.Comment) error {
+
+	if err := r.db.WithContext(ctx).Create(comment).Error; err != nil {
 		r.log.Println(err)
 		return err
 	}
@@ -36,11 +43,11 @@ func (r *repo) Create(ctx context.Context, comment *domain.Comment) error {
 	return nil
 }
 
-func (r *repo) GetAll(ctx context.Context, filters Filters, offset, limit int) ([]domain.Comment, error){
+func (r *repo) GetAll(ctx context.Context, filters Filters, offset, limit int) ([]blogDomain.Comment, error){
 	return nil, nil
 }
 
-func (r *repo) Get(ctx context.Context, id string) (*domain.Comment, error){
+func (r *repo) Get(ctx context.Context, id string) (*blogDomain.Comment, error){
 	return nil, nil
 }
 

@@ -2,10 +2,10 @@ package comment
 
 import (
 	"context"
-	"errors"
+	//"errors"
 
 	"github.com/ncostamagna/go_lib_response/response"
-	"github.com/ncostamagna/gocourse_meta/meta"
+	//"github.com/ncostamagna/gocourse_meta/meta"
 )
 
 //Endpoints struct
@@ -44,15 +44,15 @@ func makeCreateEndpoint(s Service) Controller {
 		req := request.(CreateReq)
 
 		if req.Name == "" {
-			return nil, response.BadRequest()
+			return nil, response.BadRequest("")
 		}
 
 		if req.Comment == "" {
-			return nil, response.BadRequest()
+			return nil, response.BadRequest("")
 		}
 
 		if req.PostID == "" {
-			return nil, response.BadRequest()
+			return nil, response.BadRequest("")
 		}
 
 		comment, err := s.Create(ctx, req.UserID, req.PostID, req.Name, req.Comment)
