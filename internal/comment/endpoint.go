@@ -3,9 +3,8 @@ package comment
 import (
 	"context"
 	//"errors"
-
-	"github.com/ncostamagna/go_lib_response/response"
-	//"github.com/ncostamagna/gocourse_meta/meta"
+"fmt"
+	"github.com/ncostamagna/go_http_utils/response"
 )
 
 //Endpoints struct
@@ -44,21 +43,25 @@ func makeCreateEndpoint(s Service) Controller {
 		req := request.(CreateReq)
 
 		if req.Name == "" {
-			return nil, response.BadRequest("")
+			return nil, response.BadRequest(ErrNameRequired.Error())
 		}
 
 		if req.Comment == "" {
-			return nil, response.BadRequest("")
+			return nil, response.BadRequest(ErrCommentRequired.Error())
 		}
 
 		if req.PostID == "" {
-			return nil, response.BadRequest("")
+			return nil, response.BadRequest(ErrPostIDRequired.Error())
 		}
 
+		fmt.Println("entra")
 		comment, err := s.Create(ctx, req.UserID, req.PostID, req.Name, req.Comment)
+		fmt.Println(comment)
+		fmt.Println(err)
 		if err != nil {
 
-			/*if err == ErrEndLesserStart ||
+			/*
+			if err == ErrEndLesserStart ||
 				err == ErrInvalidStartDate ||
 				err == ErrInvalidEndDate {
 				return nil, response.BadRequest(err.Error())

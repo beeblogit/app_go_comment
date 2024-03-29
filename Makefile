@@ -4,6 +4,7 @@ build:
 	sam build
 
 start:
+	if [ -e ".aws-sam" ];then rm -rf ".aws-sam" ; fi
 	make build
 	sam local start-api --env-vars env.json
 

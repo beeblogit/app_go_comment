@@ -17,6 +17,8 @@ Globals:
         DATABASE_HOST: ""
         DATABASE_PORT: ""
         DATABASE_NAME: ""
+        PAGINATOR_LIMIT_DEFAULT: ""
+        DATABASE_MIGRATE: ""
 
 Resources:
   ApiGateway:
@@ -28,7 +30,7 @@ Resources:
   StoreComment:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Description: Get all comments
+      Description: Create a comment
       CodeUri: cmd/comment/
       Handler: store
       Runtime: go1.x
@@ -38,7 +40,7 @@ Resources:
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /comments
-            Method: GET
+            Method: POST
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

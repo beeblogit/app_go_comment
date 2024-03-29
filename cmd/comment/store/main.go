@@ -21,7 +21,7 @@ func init() {
 	//_ = godotenv.Load()
 	l := bootstrap.InitLogger()
 
-	db, err = bootstrap.DBConnection()
+	db, _ = bootstrap.DBConnection()
 	if err != nil {
 		l.Fatal(err)
 	}

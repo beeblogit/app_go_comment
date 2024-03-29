@@ -7,22 +7,23 @@ import (
 	"encoding/json"
 	//"errors"
 	//"io"
-	
 	//"net/http"
 	//"strings"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/beeblogit/app_go_interaction/internal/comment"
-	//"github.com/digitalhouse-tech/go-lib-kit/request"
-	"github.com/digitalhouse-tech/go-lib-kit/response"
-	"github.com/digitalhouse-tech/go-lib-util/lambda"
+	"github.com/ncostamagna/go_http_utils/response"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/transport/awslambda"
+	"github.com/go-kit/kit/log"
+	"errors"
+	"gorm.io/gorm"
+
+
 )
 
 func NewLambdaCommentStore(endpoints comment.Endpoints) *awslambda.Handler {
-	return awslambda.NewHandler(endpoint.Endpoint(endpoints.Create), decodeCommentStoreRequest, lambda.EncodeResponse,
-		lambda.HandlerErrorEncoder(nil), awslambda.HandlerFinalizer(lambda.HandlerFinalizer(nil)))
+	return awslambda.NewHandler(endpoint.Endpoint(endpoints.Create), decodeCommentStoreRequest, EncodeResponse,
+		HandlerErrorEncoder(nil), awslambda.HandlerFinalizer(HandlerFinalizer(nil)))
 }
 
 
@@ -56,4 +57,65 @@ func decodeCommentStoreRequest(_ context.Context, payload []byte) (interface{}, 
 		return nil, response.BadRequest(err.Error())
 	}
 	return res, nil
+}
+
+
+func EncodeResponse(_ context.Context, resp interface{}) ([]byte, error) {
+	var res response.Response
+	switch resp.(type) {
+	case response.Response:
+		res = resp.(response.Response)
+	default:
+		res = response.InternalServerError("unknown response type")
+	}
+	return APIGatewayProxyResponse(res)
+}
+
+// HandlerErrorEncoder
+func HandlerErrorEncoder(log log.Logger) awslambda.HandlerOption {
+	return awslambda.HandlerErrorEncoder(
+		awslambda.ErrorEncoder(errorEncoder(log)),
+	)
+}
+
+// HandlerFinalizer -
+func HandlerFinalizer(log log.Logger) func(context.Context, []byte, error) {
+	return func(ctx context.Context, resp []byte, err error) {
+
+	}
+}
+
+
+func errorEncoder(log log.Logger) func(context.Context, error) ([]byte, error) {
+	return func(_ context.Context, err error) ([]byte, error) {
+		res := buildResponse(err, log)
+		return APIGatewayProxyResponse(res)
+	}
+}
+
+// buildResponse builds an error response from an error.
+func buildResponse(err error, log log.Logger) response.Response {
+	switch err.(type) {
+	case response.Response:
+		return err.(response.Response)
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return response.NotFound("")
+	}
+
+	return response.InternalServerError("")
+}
+
+// APIGatewayProxyResponse
+func APIGatewayProxyResponse(res response.Response) ([]byte, error) {
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		return nil, err
+	}
+	awsResponse := events.APIGatewayProxyResponse{
+		Body:       string(bytes),
+		StatusCode: res.StatusCode(),
+	}
+	return json.Marshal(awsResponse)
 }
