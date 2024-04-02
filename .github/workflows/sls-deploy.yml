@@ -1,0 +1,13 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - qa
+      - main
+    tags:
+      - "**"
+jobs:
+  deploy:
+    uses: ncostamagna/github-workflows-templates/.github/workflows/go-serverless-deploy.yml@feat-1
+    secrets: inherit
