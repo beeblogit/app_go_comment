@@ -41,6 +41,8 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /comments
             Method: POST
+    Metadata:
+        BuildMethod: go1.x
 
   GetComment:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -56,6 +58,8 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /comments
             Method: GET
+    Metadata:
+      BuildMethod: go1.x
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
