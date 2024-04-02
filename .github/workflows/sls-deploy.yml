@@ -5,6 +5,7 @@ on:
     branches:
       - qa
       - main
+      - deploy
     tags:
       - "**"
 
@@ -52,6 +53,7 @@ jobs:
         run: echo "$var" | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
       - name: Serverless deploy
         run: |
+          ls
           sam build --use-container
           sam package --template-file template.yaml --output-template-file output.yaml
           sam deploy --template-file output.yaml
