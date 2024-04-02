@@ -33,7 +33,7 @@ Resources:
       Description: Create a comment
       CodeUri: cmd/comment/
       Handler: store
-      Runtime: go1.x
+      Runtime: provided.al2
       Events:
         CatchAll:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -50,7 +50,7 @@ Resources:
       Description: Create a comment
       CodeUri: cmd/comment/
       Handler: getall
-      Runtime: go1.x
+      Runtime: provided.al2
       Events:
         CatchAll:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
