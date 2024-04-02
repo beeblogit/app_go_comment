@@ -9,5 +9,5 @@ on:
       - "**"
 jobs:
   deploy:
-    uses: ncostamagna/github-workflows-templates/.github/workflows/go-serverless-deploy.yml@main
+    uses: ncostamagna/github-workflows-templates/.github/workflows/go-serverless-deploy.yml@deploy
     secrets: inherit
