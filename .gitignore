@@ -2,3 +2,4 @@
 bin
 output.yaml
 env.json
+coverage.out

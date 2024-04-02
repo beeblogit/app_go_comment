@@ -12,7 +12,7 @@ import (
 	"errors"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/beeblogit/app_go_interaction/internal/comment"
-	"github.com/digitalhouse-tech/go-lib-kit/request"
+	"github.com/ncostamagna/go_http_utils/request"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/transport/awslambda"
 	"github.com/go-kit/log"

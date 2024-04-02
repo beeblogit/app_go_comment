@@ -15,6 +15,6 @@ deploy:
 
 test:
 	@echo "=> Running linter"
-	@${GOPATH}/bin/golangci-lint run ./internal/... ./pkg/...
+	@${GOPATH}/bin/golangci-lint run ./internal/... ./pkg/... ./cmd/...
 	@echo "=> Running tests"
 	@go test ./internal/... ./pkg/... -covermode=atomic -coverpkg=./... -count=1 -race -v

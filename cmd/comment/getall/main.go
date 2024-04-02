@@ -41,5 +41,5 @@ func init() {
 }
 
 func main() {
-	lambda.StartHandler(h)
+	lambda.Start(h)
 }
