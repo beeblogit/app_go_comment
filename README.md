@@ -12,6 +12,7 @@ This is a sample template for sam-app - Below is a brief explanation of what we 
 └── template.yaml
 ```
 
+
 ## Requirements
 
 * AWS CLI already configured with Administrator permission
