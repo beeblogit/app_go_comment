@@ -53,7 +53,7 @@ jobs:
         run: echo "$var" | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
       - name: Serverless deploy
         run: |
-          go env -w GO111MODULE=off
+          go env -w GOSUMDB=off
           go mod tidy
           go env
           sam build --use-container
