@@ -13,6 +13,9 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
 
+# sam build --use-container
+# sam package --template-file template.yaml --output-template-file output.yaml
+# sam deploy --template-file output.yaml
 
 jobs:
   deploy:
@@ -56,6 +59,4 @@ jobs:
           go env -w GOSUMDB=off
           go mod tidy
           go env
-          sam build --use-container
-          sam package --template-file template.yaml --output-template-file output.yaml
-          sam deploy --template-file output.yaml
+          make deploy
