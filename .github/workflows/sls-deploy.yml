@@ -9,8 +9,8 @@ on:
       - "**"
 jobs:
   deploy:
+    uses: ncostamagna/github-workflows-templates/.github/workflows/go-serverless-deploy.yml@deploy
+    secrets: inherit
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read  # This is required for actions/checkout
-    uses: ncostamagna/github-workflows-templates/.github/workflows/go-serverless-deploy.yml@deploy
-    secrets: inherit
