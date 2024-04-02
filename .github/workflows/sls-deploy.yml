@@ -15,5 +15,43 @@ permissions:
 
 jobs:
   deploy:
-    uses: ncostamagna/github-workflows-templates/.github/workflows/go-serverless-deploy.yml@deploy
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+    steps:
+      - run: echo ${{ github.ref_name }}
+      - run: echo prod
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.22
+      #- uses: actions/setup-python@v2
+      #- run: pip install wheel setuptools pip --upgrade
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+          version: ${{ inputs.sam-version }}
+      - name: Export secret as env
+        if: ${{ env.secret != 'null' }}
+        run: echo "$secret" | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+        env: 
+          secret: ${{ toJson(secrets) }}
+      - name: Export vars as env
+        if: ${{ env.var != 'null' }}
+        env:
+          var: ${{ toJson(vars) }}
+        run: echo "$var" | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+      - name: Serverless deploy
+        run: |
+          sam build --use-container
+          sam package --template-file template.yaml --output-template-file output.yaml
+          sam deploy --template-file output.yaml
