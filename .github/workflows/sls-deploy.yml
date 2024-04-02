@@ -54,6 +54,7 @@ jobs:
       - name: Serverless deploy
         run: |
           ls
+          go env
           sam build --use-container
           sam package --template-file template.yaml --output-template-file output.yaml
           sam deploy --template-file output.yaml
