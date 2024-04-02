@@ -1,0 +1,14 @@
+on:
+  push:
+    branches:
+      - "**"
+      - "!qa"
+      - "!master"
+      - "!main"
+  pull_request:
+name: Test
+
+jobs:
+  test:
+    uses: ncostamagna/github-workflows-templates/.github/workflows/go-test.yml@main
+    secrets: inherit

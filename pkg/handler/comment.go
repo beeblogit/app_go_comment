@@ -9,16 +9,15 @@ import (
 	//"io"
 	//"net/http"
 	//"strings"
+	"errors"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/beeblogit/app_go_interaction/internal/comment"
-	"github.com/ncostamagna/go_http_utils/response"
+	"github.com/digitalhouse-tech/go-lib-kit/request"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/transport/awslambda"
-	"github.com/go-kit/kit/log"
-	"errors"
+	"github.com/go-kit/log"
+	"github.com/ncostamagna/go_http_utils/response"
 	"gorm.io/gorm"
-
-
 )
 
 func NewLambdaCommentStore(endpoints comment.Endpoints) *awslambda.Handler {
@@ -26,6 +25,20 @@ func NewLambdaCommentStore(endpoints comment.Endpoints) *awslambda.Handler {
 		HandlerErrorEncoder(nil), awslambda.HandlerFinalizer(HandlerFinalizer(nil)))
 }
 
+func NewLambdaCommentGetAll(endpoints comment.Endpoints) *awslambda.Handler {
+	return awslambda.NewHandler(endpoint.Endpoint(endpoints.GetAll), decodeCommentGetAllRequest, EncodeResponse,
+		HandlerErrorEncoder(nil), awslambda.HandlerFinalizer(HandlerFinalizer(nil)))
+}
+
+func NewLambdaCommentUpdate(endpoints comment.Endpoints) *awslambda.Handler {
+	return awslambda.NewHandler(endpoint.Endpoint(endpoints.Create), decodeCommentStoreRequest, EncodeResponse,
+		HandlerErrorEncoder(nil), awslambda.HandlerFinalizer(HandlerFinalizer(nil)))
+}
+
+func NewLambdaCommentDelete(endpoints comment.Endpoints) *awslambda.Handler {
+	return awslambda.NewHandler(endpoint.Endpoint(endpoints.Create), decodeCommentStoreRequest, EncodeResponse,
+		HandlerErrorEncoder(nil), awslambda.HandlerFinalizer(HandlerFinalizer(nil)))
+}
 
 func decodeCommentStoreRequest(_ context.Context, payload []byte) (interface{}, error) {
 
@@ -59,12 +72,28 @@ func decodeCommentStoreRequest(_ context.Context, payload []byte) (interface{}, 
 	return res, nil
 }
 
+func decodeCommentGetAllRequest(_ context.Context, payload []byte) (interface{}, error) {
+
+	var event events.APIGatewayProxyRequest
+
+	if err := json.Unmarshal(payload, &event); err != nil {
+		return nil, response.BadRequest(err.Error())
+	}
+
+	var req comment.GetAllReq
+	err := request.DecodeMap(event.QueryStringParameters, &req)
+	if err != nil {
+		return nil, response.BadRequest(err.Error())
+	}
+
+	return req, nil
+}
 
 func EncodeResponse(_ context.Context, resp interface{}) ([]byte, error) {
 	var res response.Response
-	switch resp.(type) {
+	switch r := resp.(type) {
 	case response.Response:
-		res = resp.(response.Response)
+		res = r
 	default:
 		res = response.InternalServerError("unknown response type")
 	}
@@ -85,7 +114,6 @@ func HandlerFinalizer(log log.Logger) func(context.Context, []byte, error) {
 	}
 }
 
-
 func errorEncoder(log log.Logger) func(context.Context, error) ([]byte, error) {
 	return func(_ context.Context, err error) ([]byte, error) {
 		res := buildResponse(err, log)
@@ -95,9 +123,9 @@ func errorEncoder(log log.Logger) func(context.Context, error) ([]byte, error) {
 
 // buildResponse builds an error response from an error.
 func buildResponse(err error, log log.Logger) response.Response {
-	switch err.(type) {
+	switch r := err.(type) {
 	case response.Response:
-		return err.(response.Response)
+		return r
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {

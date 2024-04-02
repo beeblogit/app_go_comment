@@ -36,7 +36,7 @@ func init() {
 	service := comment.NewService(l, repo)
 
 	endpoint := comment.MakeEndpoints(service, comment.Config{LimPageDef: pagLimDef})
-	h = handler.NewLambdaCommentStore(endpoint)
+	h = handler.NewLambdaCommentGetAll(endpoint)
 
 }
 

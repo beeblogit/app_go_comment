@@ -12,3 +12,9 @@ deploy:
 	make build
 	sam package --template-file template.yaml --output-template-file output.yaml
 	sam deploy --template-file output.yaml
+
+test:
+	@echo "=> Running linter"
+	@${GOPATH}/bin/golangci-lint run ./internal/... ./pkg/...
+	@echo "=> Running tests"
+	@go test ./internal/... ./pkg/... -covermode=atomic -coverpkg=./... -count=1 -race -v

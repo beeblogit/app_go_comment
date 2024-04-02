@@ -10,7 +10,7 @@ import (
 
 type (
 	Filters struct {
-		ID []string
+		ID     []string
 		UserID []string
 		PostID []string
 	}
@@ -39,11 +39,10 @@ func NewService(l *log.Logger, repo Repository) Service {
 
 func (s service) Create(ctx context.Context, userID, postID, name, comment string) (*blogDomain.Comment, error) {
 
-
 	comObj := &blogDomain.Comment{
-		UserID: userID,
-		PostID: postID,
-		Name:      name,
+		UserID:  userID,
+		PostID:  postID,
+		Name:    name,
 		Comment: comment,
 	}
 
@@ -54,15 +53,18 @@ func (s service) Create(ctx context.Context, userID, postID, name, comment strin
 	return comObj, nil
 }
 
-
 func (s service) Get(ctx context.Context, id string) (*blogDomain.Comment, error) {
 	return nil, nil
 }
 
 func (s service) GetAll(ctx context.Context, filters Filters, offset, limit int) ([]blogDomain.Comment, error) {
-	return nil, nil
+	comments, err := s.repo.GetAll(ctx, filters, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
 }
 
 func (s service) Count(ctx context.Context, filters Filters) (int, error) {
-	return 0, nil
+	return s.repo.Count(ctx, filters)
 }
